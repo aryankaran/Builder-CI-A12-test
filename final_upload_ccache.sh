@@ -28,10 +28,17 @@ ccache_upload_final () {
 	rclone copy --drive-chunk-size 256M --stats 1s $1.tar.zst brrbrr:$1/$NAME -P
 }
 
+# CI run time
+ci_time() {
+	CIDIFF=$(cat ${CIRRUS_WORKING_DIR}/ci_time)
+	export CI_MINUTES=$((115-$((CIDIFF / 60))))
+}
+
 # Let session sleep on error for debug
 sleep_on_error() {
 	if [ -f $(pwd)/rom/out/target/product/${T_DEVICE}/${ZIPNAME} ]; then
 		ccache_upload_final ccache
+		sleep ${CI_MINUTES}m
 	else
 		ccache_upload_final ccache
 		sleep 2h
@@ -40,4 +47,5 @@ sleep_on_error() {
 
 cd /tmp
 compiled_zip
+ci_time
 sleep_on_error

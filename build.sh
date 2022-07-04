@@ -368,6 +368,7 @@ telegram_post() {
 
 # Compile moments! Yay!
 compile_moments() {
+	time_sec CI_START
 	build_dir
 	git_setup
 	if [ $GIT_USER = GeoPD ]; then
@@ -393,6 +394,9 @@ compile_moments() {
 	fi
 	build_gapps
 	ccache -s
+	time_sec CI_END
+	time_diff CIDIFF CI_START CI_END
+	touch ${CIRRUS_WORKING_DIR}/ci_time && echo $CIDIFF > $_
 }
 
 compile_moments
